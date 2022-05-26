@@ -12,18 +12,37 @@ def readTxt(file):
     with open(file,'r',encoding="utf-8") as f:
         return f.read().split("\n")
 
-dic={'A':'A','T':'T','G':'G','C':'C'}
-dic_con={'A':1,'T':2,'G':3,'C':4}
+dic={'A':'A','T':'T','G':'G','C':'C','N':"N"}
+dic_con={'A':1,'T':2,'G':3,'C':4,'N':0}
 def readTxt(file):
     with open(file,'r',encoding="utf-8") as f:
         return f.read().split("\n")
 
-non_test=readTxt("datasets/non_test.txt")
-non_train=readTxt("datasets/non_train.txt")
-strong_test=readTxt("datasets/strong_test.txt")
-strong_train=readTxt("datasets/strong_train.txt")
-weak_test=readTxt("datasets/weak_test.txt")
-weak_train=readTxt("datasets/weak_train.txt")
+enhancer_file="datasets/fileTrain06_1.fa"
+file=open(enhancer_file,"r",encoding="utf-8")
+po_list=[]
+ne_list=[]
+lines=file.read().split()
+for i in range(0,len(lines),2):
+    name=lines[i]
+    dna=lines[i+1]
+    if name[-2:]=='po':
+        po_list.append(dna)
+    else:
+        ne_list.append(dna)
+for i in range(len(po_list)):
+    po_list[i]=po_list[i][0:699]
+    # if len(po_list[i])!=699:
+    #     print(len(ne_list[i]))
+
+for i in range(len(ne_list)):
+    ne_list[i]=ne_list[i][0:699]
+    
+    if len(ne_list[i])!=699:
+        nums='N'*(699-len(ne_list[i]))
+        ne_list[i]+=nums
+
+
 
 def GenerateFromTextToNumpy(label,train):
     train_con=[]
@@ -35,7 +54,7 @@ def GenerateFromTextToNumpy(label,train):
         con_t=[dic_con[key] for key in i]
         train_con.append(np.array(con_t))
 
-        t=threeSequecne(i,4)  
+        t=threeSequecne(i,4) 
         train_text.append(np.array(t))
 
         t=threeSequecne(i,7) 
@@ -48,29 +67,50 @@ def GenerateFromTextToNumpy(label,train):
     train_y=np.array(train_y)
     return (train_con,train_text,train_y,train_text_5)
 
+ne_train_data=GenerateFromTextToNumpy(0,ne_list)
+po_train_data=GenerateFromTextToNumpy(1,po_list)
+
+train_text=np.concatenate((ne_train_data[1],po_train_data[1]))
+train_con=np.concatenate((ne_train_data[0],po_train_data[0]))[:,:,np.newaxis]
+train_text_5=np.concatenate((ne_train_data[3],po_train_data[3]))
+
+train_y=np.concatenate((ne_train_data[2],po_train_data[2]))
+
 def GenerateLayerOneTestData():
-    non_test_data=GenerateFromTextToNumpy(0,non_test)
-    strong_test_data=GenerateFromTextToNumpy(1,strong_test)
-    weak_test_data=GenerateFromTextToNumpy(1,weak_test)
-    test_x={"con":np.concatenate((non_test_data[0],strong_test_data[0],weak_test_data[0]))[:,:,np.newaxis],"text":np.concatenate((non_test_data[1],strong_test_data[1],weak_test_data[1])),"text_5":np.concatenate((non_test_data[3],strong_test_data[3],weak_test_data[3]))}
-    test_y=np.concatenate((non_test_data[2],strong_test_data[2],weak_test_data[2]))
+    enhancer_file="datasets/fileTest06_1.fa"
+    file=open(enhancer_file,"r",encoding="utf-8")
+    po_list=[]
+    ne_list=[]
+    lines=file.read().split()
+    for i in range(0,len(lines),2):
+        name=lines[i]
+        dna=lines[i+1]
+        if name[-2:]=='po':
+            po_list.append(dna)
+        else:
+            ne_list.append(dna)
+
+    for i in range(len(po_list)):
+        po_list[i]=po_list[i][0:699]
+        if len(po_list[i])!=699:
+            print(len(ne_list[i]))
+
+    for i in range(len(ne_list)):
+        ne_list[i]=ne_list[i][0:699]
+        
+        if len(ne_list[i])!=699:
+            nums='N'*(699-len(ne_list[i]))
+            ne_list[i]+=nums
+
+    ne_data=GenerateFromTextToNumpy(0,ne_list)
+    po_data=GenerateFromTextToNumpy(1,po_list)
+
+    test_x={"con":np.concatenate((ne_data[0],po_data[0]))[:,:,np.newaxis],"text":np.concatenate((ne_data[1],po_data[1])),"text_5":np.concatenate((ne_data[3],po_data[3]))}
+    test_y=np.concatenate((ne_data[2],po_data[2]))
     return test_x,test_y
 
-def returnAccuracy():
-    import math
-    TP=self_evaluate(po_test,test_y[0:200])
-    TN=self_evaluate(ne_test,test_y[200:])
-    FP=1-TN
-    FN=1-TP
-    SN=TP/(TP+FN)
-    SP=TN/(TN+FP)
-    ACC=(TP+TN)/(TP+TN+FN+FP)
-    try:
-        MCC=(TP*TN-FP*FN)/math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
-    except:
-        MCC=-1
-    text={"ACC":ACC,"SP":SP,"SN":SN,"MCC":MCC}
-    return text
+
+
 def self_evaluate(x,y):
     res=tf.nn.sigmoid(model.predict(x))  
     res=np.array(res)
@@ -84,26 +124,31 @@ def self_evaluate(x,y):
             correct+=1
     return correct/sum
 
-
-non_train_data=GenerateFromTextToNumpy(0,non_train)
-strong_train_data=GenerateFromTextToNumpy(1,strong_train)
-weak_train_data=GenerateFromTextToNumpy(1,weak_train)
-
-train_text=np.concatenate((non_train_data[1],strong_train_data[1],weak_train_data[1]))
-train_con=np.concatenate((non_train_data[0],strong_train_data[0],weak_train_data[0]))[:,:,np.newaxis]
-train_text_5=np.concatenate((non_train_data[3],strong_train_data[3],weak_train_data[3]))
-
-train_y=np.concatenate((non_train_data[2],strong_train_data[2],weak_train_data[2]))
+    
 test_x,test_y=GenerateLayerOneTestData()
-
 po_test=test_x.copy()
-po_test["con"]=po_test["con"][0:200]
-po_test["text"]=po_test["text"][0:200]
-po_test["text_5"]=po_test["text"][0:200]
+po_test["con"]=po_test["con"][0:1578]
+po_test["text"]=po_test["text"][0:1578]
+po_test["text_5"]=po_test["text"][0:1578]
 ne_test=test_x.copy()
-ne_test["con"]=ne_test["con"][200:]
-ne_test["text"]=ne_test["text"][200:]
-ne_test["text_5"]=ne_test["text_5"][200:]
+ne_test["con"]=ne_test["con"][1578:]
+ne_test["text"]=ne_test["text"][1578:]
+ne_test["text_5"]=ne_test["text_5"][1578:]
+def returnAccuracy():
+    import math
+    TP=self_evaluate(po_test,test_y[0:1578])
+    TN=self_evaluate(ne_test,test_y[1578:])
+    FP=1-TN
+    FN=1-TP
+    SN=TP/(TP+FN)
+    SP=TN/(TN+FP)
+    ACC=(TP+TN)/(TP+TN+FN+FP)
+    try:
+        MCC=(TP*TN-FP*FN)/math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
+    except:
+        MCC=-1
+    text={"ACC":ACC,"SP":SP,"SN":SN,"MCC":MCC}
+    return text
 
 
 kf=KFold(n_splits=10,shuffle=True,random_state=5)
@@ -117,7 +162,7 @@ def load_model():
         kernel_size_1=1
         kernel_size_2=2
         kernel_size_3=3
-        input_con=tf.keras.Input(shape=(200,1),name='con')
+        input_con=tf.keras.Input(shape=(699,1),name='con')
         y=tf.keras.layers.Conv1D(kernel_num,kernel_size=kernel_size_1,strides=1,padding='same', activation=tf.nn.relu,kernel_regularizer=tf.keras.regularizers.l2(0.01))(input_con)
         y=tf.keras.layers.Conv1D(kernel_num, kernel_size=kernel_size_1,strides=1, padding='same', activation=tf.nn.relu,kernel_regularizer=tf.keras.regularizers.l2(0.01))(y)
         
@@ -211,8 +256,6 @@ def train(index):
             text["val_acc"]=val_acc
             print("UpdateTest:")
             print(text)
-
-
     record.append(text) 
 
 def printFinalResult():
@@ -220,7 +263,6 @@ def printFinalResult():
     SP=0
     SN=0
     MCC=0
-    VAL_ACC=0
     for i in record:
         ACC+=i["ACC"]
         SP+=i["SP"]
@@ -232,8 +274,10 @@ def printFinalResult():
     SN/=10
     MCC/=10
     VAL_ACC/=10
-    text={"ACC":ACC,"SP":SP,"SN":SN,"MCC":MCC,"VAL_ACC":VAL_ACC}
+    text={"ACC":ACC,"SP":SP,"SN":SN,"MCC":MCC}
     print(text)
+
+
 
 if __name__=="__main__":
     record=[]
