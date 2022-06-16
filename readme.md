@@ -1,12 +1,12 @@
 ## Indroduction
 
-Welcome to the iEnhancer-RLA code repository. iEnhancer-RLA is a deep learning method based on a self-attentive mechanism to fuse local and global features of sequences to identify and classify enhancers.
+Welcome to the iEnhancer-DLRA code repository. iEnhancer-DLRA is a deep learning method based on a self-attentive mechanism to fuse local and global features of sequences to identify and classify enhancers.
 
 
 
 ## Performance
 
-The experimental results on the independent test dataset indicate that iEnhancer-RLA performs better than nine existing state-of-the-art methods in both identification and classification of enhancers in  all almost metrics.
+The experimental results on the independent test dataset indicate that iEnhancer-DLRA performs better than nine existing state-of-the-art methods in both identification and classification of enhancers in  all almost metrics.
 
 **Enhancer identifier :** 
 
@@ -21,7 +21,7 @@ The experimental results on the independent test dataset indicate that iEnhancer
 | iEnhancer-EBLSTM | 77.20      | 79.50      | 75.50      | 0.272      |
 | iEnhancer-GAN    | 78.40      | 75.80      | 81.10      | 0.567     |
 | iEnhancer-RD     | 78.80      | 76.50      | 81.00      | 0.576      |
-| iEnhancer-RLA    | **93.72** | **90.45** | **97.00** | **0.876** |
+| iEnhancer-DLRA   | **93.72** | **90.45** | **97.00** | **0.876** |
 | Improvement      | +13.8%     | +8.3%      | +19.7%     | +34.7%     |
 
 **Enhancer classifier :** 
@@ -37,7 +37,7 @@ The experimental results on the independent test dataset indicate that iEnhancer
 | iEnhancer-EBLSTM | 65.80     | 53.60 | 81.20     | 0.324     |
 | iEnhancer-GAN    | 74.90     | 53.70 | 96.10     | 0.505     |
 | iEnhancer-RD     | 70.50     | 57.00 | 84.00     | 0.426     |
-| iEnhancer-RLA    | **84.40** | 70.00 | **98.80** | **0.718** |
+| iEnhancer-DLRA   | **84.40** | 70.00 | **98.80** | **0.718** |
 | Improvement      | +12.6%       | -5.4%   | +2.8%        | +42.1%       |
 
 
@@ -52,8 +52,8 @@ The experimental results on the independent test dataset indicate that iEnhancer
 ## Usage
 
 ```bash
-git clone https://github.com/lftxd1/iEnhancer-RLA.git
-cd iEnhancer-RLA
+git clone https://github.com/lftxd1/iEnhancer-DLRA.git
+cd iEnhancer-DLRA
 pip install -r requirements.txt
 python benchmark_identifier.py
 python benchmark_classifier.py
