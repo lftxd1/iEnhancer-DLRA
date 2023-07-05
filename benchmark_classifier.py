@@ -33,10 +33,10 @@ def GenerateFromTextToNumpy(label,train):
     train_y=[]
     train_text_5=[]
     for i in train:
-        t=threeSequecne(i,4) 
+        t=threeSequence(i,4) 
         train_text.append(np.array(t))
 
-        t=threeSequecne(i,7) 
+        t=threeSequence(i,7) 
         train_text_5.append(np.array(t))
 
         con_t=[dic_con[key] for key in i]
@@ -235,7 +235,7 @@ def printFinalResult():
     SP=0
     SN=0
     MCC=0
-    for i in rrecord:
+    for i in record:
         ACC+=i["ACC"]
         SP+=i["SP"]
         SN+=i["SN"]

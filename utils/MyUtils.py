@@ -17,20 +17,20 @@ def readTxt(file):
 def toArray(list):
     return np.array(list)
 
-def threeSequecne(text,num):
+def threeSequence(text,num):
     t_list=[]
     for i in range(len(text)-num+1):
         t_list.append(text[i:i+num])
     return " ".join(t_list)    
 
-def threeSequecneCnn(text):
+def threeSequenceCnn(text):
     t_list=[]
     for i in range(len(text)-1):
         t_list.append(text[i:i+2])
     return toArray(t_list) 
 
 
-def anySequecne(text,value):
+def anySequence(text,value):
     t_list=[]
     for i in range(len(text)-(value-1)):
         t_list.append(text[i:i+value])
