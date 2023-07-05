@@ -54,10 +54,10 @@ def GenerateFromTextToNumpy(label,train):
         con_t=[dic_con[key] for key in i]
         train_con.append(np.array(con_t))
 
-        t=threeSequecne(i,4) 
+        t=threeSequence(i,4) 
         train_text.append(np.array(t))
 
-        t=threeSequecne(i,7) 
+        t=threeSequence(i,7) 
         train_text_5.append(np.array(t))
 
         train_y.append(np.array([label]))
